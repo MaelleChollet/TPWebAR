@@ -1,14 +1,227 @@
-<html>
-  <head>
-    <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
-  </head>
-  <body>
-    <a-scene>
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-      <a-sky color="#ECECEC"></a-sky>
-    </a-scene>
-  </body>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TP01 WebAR - ST2AWD</title>
+  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #1e1e2f;
+      color: white;
+    }
+    #menu h1 { margin-bottom: 30px; text-align: center; }
+    #menu button {
+      width: 260px;
+      margin: 8px;
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #4CC3D9;
+      color: white;
+      cursor: pointer;
+    }
+    #menu button:hover { background: #37a0b3; }
+    #retourMenu {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      padding: 8px 14px;
+      background: #1e1e2f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #uiOverlay {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MENU D'ACCUEIL -->
+  <div id="menu">
+    <h1>TP01 - WebAR<br>ST2AWD</h1>
+    <button onclick="goTo(1)">Exercice 1 - Scène 3D A-Frame</button>
+    <button onclick="goTo(2)">Exercice 2 - AR.js + marqueur Hiro</button>
+    <button onclick="goTo(3)">Exercice 3 - Interaction clic/tap</button>
+    <button onclick="goTo(4)">Exercice 4 - Marker personnalisé</button>
+    <button onclick="goTo(5)">Exercice 5 - QR code + marker Hiro</button>
+    <button onclick="goTo(6)">Exercice 6 - UI DOM overlay</button>
+  </div>
+
+  <!-- CONTENEUR DES EXERCICES AR/3D -->
+  <div id="app"></div>
+
+  <script>
+    // Redirige vers un exercice puis recharge la page pour que AR.js
+    // réinitialise proprement la caméra à chaque changement de scène.
+    function goTo(n) {
+      window.location.hash = 'ex' + n;
+      window.location.reload();
+    }
+
+    function retourMenu() {
+      window.location.hash = '';
+      window.location.reload();
+    }
+
+    // Templates HTML pour chaque exercice
+    const templates = {
+      1: `
+        <a-scene>
+          <a-box position="-1 2 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+          <a-box position="0 2 -5" rotation="0 69 0" color="#EF2D5E"></a-box>
+          <a-box position="1 2 -1" rotation="0 45 45" color="#FFC65D"></a-box>
+          <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
+          <a-camera position="0 10 15" look-at="0 0 0"></a-camera>
+        </a-scene>
+      `,
+      2: `
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
+          <a-marker preset="hiro">
+            <a-box position="0 0 0" color="blue" material="opacity: 0.5; transparent: true"
+              animation="property: rotation; to:0 360 0; loop: true; dur: 3000; easing: linear"></a-box>
+          </a-marker>
+          <a-entity camera></a-entity>
+        </a-scene>
+      `,
+      3: `
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
+          <a-marker preset="hiro">
+            <a-box id="boiteAR" position="0 0 0" color="blue" material="opacity: 0.5; transparent: true"
+              animation="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 3000; easing: linear"></a-box>
+          </a-marker>
+          <a-camera>
+            <a-cursor></a-cursor>
+          </a-camera>
+        </a-scene>
+      `,
+      4: `
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
+          <a-marker type="pattern" url="pattern-Maelle.patt">
+            <a-sphere position="0 0.5 0" radius="0.5" color="tomato"></a-sphere>
+          </a-marker>
+          <a-marker type="pattern" url="pattern-Marker_personalise.patt">
+            <a-sphere position="0 0.5 0" radius="0.5" color="tomato"></a-sphere>
+          </a-marker>
+          <a-camera>
+            <a-cursor></a-cursor>
+          </a-camera>
+        </a-scene>
+      `,
+      5: `
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
+         <a-marker type="pattern" url="pattern-Maelle.patt"> 
+          <a-sphere position="0 0.5 0" radius="0.5" color="tomato"></a-sphere>
+         </a-marker>
+         <a-camera>
+          <a-cursor></a-cursor>
+         </a-camera>
+        </a-scene>
+      `,
+      6: `
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
+          <a-marker preset="hiro" id="markerHiro">
+            <a-box id="boiteAR" position="0 0.5 0" color="blue" scale="1 1 1"></a-box>
+          </a-marker>
+          <a-camera>
+            <a-cursor></a-cursor>
+          </a-camera>
+        </a-scene>
+        <div id="uiOverlay">
+          <label>Taille : <input type="range" id="tailleSlider" min="0.1" max="3.0" step="0.1" value="1"></label>
+          <br><br>
+          <button id="btnRouge" style="background: red; width: 30px; height: 30px;"></button>
+          <button id="btnVert" style="background: green; width: 30px; height: 30px;"></button>
+          <button id="btnBleu" style="background: blue; width: 30px; height: 30px;"></button>
+        </div>
+      `
+    };
+
+    function initExercice3() {
+      document.querySelector('#boiteAR').addEventListener('click', function () {
+        var box = this;
+        var couleurs = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'cyan', 'pink'];
+        var couleurAleatoire = couleurs[Math.floor(Math.random() * couleurs.length)];
+        box.setAttribute('color', couleurAleatoire);
+        box.setAttribute('rotation', '0 0 0');
+        box.setAttribute('animation', 'property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 500; easing: linear');
+        setTimeout(function () {
+          box.setAttribute('rotation', '0 0 0');
+          box.setAttribute('animation', 'property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 3000; easing: linear');
+        }, 500);
+      });
+    }
+
+    function initExercice6() {
+      var marker = document.querySelector('#markerHiro');
+      var ui = document.querySelector('#uiOverlay');
+      var box = document.querySelector('#boiteAR');
+      var slider = document.querySelector('#tailleSlider');
+      marker.addEventListener('markerFound', function () {
+        ui.style.display = 'block';
+      });
+      marker.addEventListener('markerLost', function () {
+        ui.style.display = 'none';
+      });
+      slider.addEventListener('input', function () {
+        var valeur = slider.value;
+        box.setAttribute('scale', valeur + ' ' + valeur + ' ' + valeur);
+      });
+      document.querySelector('#btnRouge').addEventListener('click', function () {
+        box.setAttribute('color', 'red');
+      });
+      document.querySelector('#btnVert').addEventListener('click', function () {
+        box.setAttribute('color', 'green');
+      });
+      document.querySelector('#btnBleu').addEventListener('click', function () {
+        box.setAttribute('color', 'blue');
+      });
+    }
+
+    // Point d'entrée : on regarde le hash de l'URL pour savoir quel exercice afficher
+    (function () {
+      var hash = window.location.hash.replace('#', '');
+      var match = hash.match(/^ex([1-6])$/);
+
+      if (!match) {
+        // Pas de hash -> on reste sur le menu, rien à faire de plus
+        return;
+      }
+
+      var n = parseInt(match[1], 10);
+      document.querySelector('#menu').style.display = 'none';
+
+      var backBtn = document.createElement('button');
+      backBtn.id = 'retourMenu';
+      backBtn.textContent = '← Menu';
+      backBtn.onclick = retourMenu;
+      document.body.appendChild(backBtn);
+
+      document.querySelector('#app').innerHTML = templates[n];
+
+      if (n === 3) initExercice3();
+      if (n === 6) initExercice6();
+    })();
+  </script>
+</body>
 </html>
