@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+    <style>
+      #retourMenu {
+        position: fixed; top: 10px; left: 10px; z-index: 1000;
+        padding: 8px 14px; background: #1e1e2f; color: white;
+        border: none; border-radius: 6px; font-family: Arial, sans-serif;
+        text-decoration: none; display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <a id="retourMenu" href="index.html">← Menu</a>
+    <a-scene>
+      <a-box position="-1 2 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-box position="0 2 -5" rotation="0 69 0" color="#EF2D5E"></a-box>
+      <a-box position="1 2 -1" rotation="0 45 45" color="#FFC65D"></a-box>
+      <a-plane position="0 0 0" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
+      <a-camera position="0 10 15" look-at="0 0 0"></a-camera>
+    </a-scene>
+  </body>
+</html>
