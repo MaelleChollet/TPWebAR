@@ -2,14 +2,33 @@
   <head>
     <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-
-
   </head>
   <body>
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false">
        <a-marker preset="hiro"> 
-        <a-box position="0 0 0" color="blue" material="opacity: 0.5; transparent: true" animation="property: rotation; to:0 360 0; loop: true; dur: 3000; easing: linear"></a-box>
+        <a-box id="boiteAR" position="0 0 0" color="blue" material="opacity: 0.5; transparent: true"
+       animation="property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 3000; easing: linear"></a-box>
        </a-marker>
+       <a-camera>
+        <a-cursor></a-cursor>
+       </a-camera>
     </a-scene>
+
+    <script>
+      document.querySelector('#boiteAR').addEventListener('click', function () {
+        var box = this;
+        var couleurs = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'cyan', 'pink'];
+        var couleurAleatoire = couleurs[Math.floor(Math.random() * couleurs.length)];
+        box.setAttribute('color', couleurAleatoire);
+
+        box.setAttribute('rotation', '0 0 0');
+        box.setAttribute('animation', 'property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 500; easing: linear');
+
+        setTimeout(function () {
+          box.setAttribute('rotation', '0 0 0');
+          box.setAttribute('animation', 'property: rotation; from: 0 0 0; to: 0 360 0; loop: true; dur: 3000; easing: linear');
+        }, 500);
+      });
+    </script>
   </body>
 </html>
